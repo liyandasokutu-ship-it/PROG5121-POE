@@ -9,6 +9,11 @@ package login;
  * @author HUAWEI
  */
 public class Login {
+    
+    private String registeredUsername;
+    private String registeredPassword;
+    private String registeredFirstName;
+    private String registeredLastName;
 
     public boolean checkUserName(String username) {
     return username.contains("_") && username.length() <= 5;
@@ -38,7 +43,7 @@ public class Login {
         return cellNumber.matches("^\\+\\d{1,3}\\d{7,10}$");
 }
 
-    public String registerUser(String username, String password, String cellNumber) {
+    public String registerUser(String username, String password, String cellNumber, String firstName, String lastName) {
     if (!checkUserName(username)) {
         return "Username is not correctly formatted; please ensure that your username contains an underscore and is no more than five characters in length.";
     }
@@ -48,14 +53,26 @@ public class Login {
     if (!checkCellPhoneNumber(cellNumber)) {
         return "Cell phone number is incorrectly formatted or does not contain an international code.";
     }
+
+    registeredUsername = username;
+    registeredPassword = password;
+    registeredFirstName = firstName;
+    registeredLastName = lastName;
+
     return "Username successfully captured.\nPassword successfully captured.\nCell number successfully captured.";
 }
 
     public boolean loginUser(String username, String password) {
-        return false;
-    }
-
+    return username.equals(registeredUsername) && password.equals(registeredPassword);
+}
+    
     public String returnLoginStatus(boolean status) {
-        return "";
+    if (status) {
+        return "Welcome " + registeredFirstName + ", " + registeredLastName + " it is great to see you again.";
+    } else {
+        return "Username or password incorrect, please try again.";
     }
 }
+}    
+
+    
