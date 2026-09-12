@@ -11,8 +11,8 @@ package login;
 public class Login {
 
     public boolean checkUserName(String username) {
-        return false;
-    }
+    return username.contains("_") && username.length() <= 5;
+}
 
     public boolean checkPasswordComplexity(String password) {
         return false;
