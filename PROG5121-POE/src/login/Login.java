@@ -15,8 +15,23 @@ public class Login {
 }
 
     public boolean checkPasswordComplexity(String password) {
-        return false;
+    boolean hasLength = password.length() >= 8;
+    boolean hasCapital = false;
+    boolean hasNumber = false;
+    boolean hasSpecial = false;
+
+    for (char c : password.toCharArray()) {
+        if (Character.isUpperCase(c)) {
+            hasCapital = true;
+        } else if (Character.isDigit(c)) {
+            hasNumber = true;
+        } else if (!Character.isLetterOrDigit(c)) {
+            hasSpecial = true;
+        }
     }
+
+    return hasLength && hasCapital && hasNumber && hasSpecial;
+}
 
     public boolean checkCellPhoneNumber(String cellNumber) {
         return false;

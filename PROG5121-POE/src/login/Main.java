@@ -14,5 +14,8 @@ public class Main {
 
         System.out.println(login.checkUserName("kyl_1"));      // should print: true
         System.out.println(login.checkUserName("kyle!!!!!!")); // should print: false
+        
+        System.out.println(login.checkPasswordComplexity("Ch&&sec@ke99!")); // should print: true
+        System.out.println(login.checkPasswordComplexity("password"));      // should print: false
     }
 }
