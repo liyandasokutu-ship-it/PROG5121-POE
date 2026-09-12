@@ -33,9 +33,10 @@ public class Login {
     return hasLength && hasCapital && hasNumber && hasSpecial;
 }
 
+    // Regex pattern adapted from: https://www.baeldung.com/java-regex-validate-phone-numbers
     public boolean checkCellPhoneNumber(String cellNumber) {
-        return false;
-    }
+        return cellNumber.matches("^\\+\\d{1,3}\\d{7,10}$");
+}
 
     public String registerUser(String username, String password, String cellNumber) {
         return "";
