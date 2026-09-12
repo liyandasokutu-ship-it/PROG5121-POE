@@ -19,6 +19,11 @@ public class Main {
         System.out.println(login.checkPasswordComplexity("password"));      
         
         System.out.println(login.checkCellPhoneNumber("+27838968976")); 
-        System.out.println(login.checkCellPhoneNumber("08966553"));     
+        System.out.println(login.checkCellPhoneNumber("08966553"));
+        
+        System.out.println(login.registerUser("kyl_1", "Ch&&sec@ke99!", "+27838968976"));
+        System.out.println(login.registerUser("kyle!!!!!!", "Ch&&sec@ke99!", "+27838968976"));
+        System.out.println(login.registerUser("kyl_1", "password", "+27838968976"));
+        System.out.println(login.registerUser("kyl_1", "Ch&&sec@ke99!", "08966553"));
     }
 }
