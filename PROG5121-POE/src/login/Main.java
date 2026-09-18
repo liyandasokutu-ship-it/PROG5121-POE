@@ -21,7 +21,7 @@ public class Main {
             String choice = scanner.nextLine(). trim();
 
             switch (choice) {
-                case "1":
+                case "1" -> {
                     System.out.print("Enter first name: ");
                     String firstName = scanner.nextLine(). trim();
                     System.out.print("Enter last name: ");
@@ -35,9 +35,9 @@ public class Main {
 
                     String result = login.registerUser(username, password, cellNumber, firstName, lastName);
                     System.out.println(result);
-                    break;
+                }
 
-                case "2":
+                case "2" -> {
                     System.out.print("Enter username: ");
                     String loginUsername = scanner.nextLine(). trim();
                     System.out.print("Enter password: ");
@@ -45,15 +45,14 @@ public class Main {
 
                     boolean success = login.loginUser(loginUsername, loginPassword);
                     System.out.println(login.returnLoginStatus(success));
-                    break;
+                }
 
-                case "3":
+                case "3" -> {
                     running = false;
                     System.out.println("Goodbye!");
-                    break;
+                }
 
-                default:
-                    System.out.println("Invalid option, please try again.");
+                default -> System.out.println("Invalid option, please try again.");
             }
         }
     }
