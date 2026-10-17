@@ -43,9 +43,14 @@ public class Message {
     }
 }
 
-    public String createMessageHash() {
-        return "";
-    }
+    public String createMessageHash(String id, int number, String text) {
+    String[] words = text.trim().split("\\s+");
+    String firstWord = words[0].replaceAll("[^A-Za-z0-9]", "");
+    String lastWord = words[words.length - 1].replaceAll("[^A-Za-z0-9]", "");
+
+    messageHash = (id.substring(0, 2) + ":" + number + ":" + firstWord + lastWord).toUpperCase();
+    return messageHash;
+}
 
     public String sentMessage() {
         return "";
