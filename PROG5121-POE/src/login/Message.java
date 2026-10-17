@@ -87,11 +87,18 @@ public class Message {
     }
 }
 
-
-
     public String printMessages() {
-        return "";
+    StringBuilder output = new StringBuilder();
+
+    for (Message m : sentMessages) {
+        output.append("Message ID: ").append(m.messageID).append("\n");
+        output.append("Message Hash: ").append(m.messageHash).append("\n");
+        output.append("Recipient: ").append(m.recipient).append("\n");
+        output.append("Message: ").append(m.messageText).append("\n\n");
     }
+
+    return output.toString();
+}
     
     public int returnTotalMessages() {
     return totalMessages;
