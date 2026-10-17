@@ -6,7 +6,10 @@
 
 package login;
 
-import java.util.Random; import java.util.ArrayList;
+import java.util.Random;
+import java.util.ArrayList;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Message {
 
@@ -17,6 +20,7 @@ public class Message {
     private String messageHash;
     private static ArrayList<Message> sentMessages = new ArrayList<>();
     private static int totalMessages = 0;
+    private static ArrayList<Message> storedMessages = new ArrayList<>();
     
     public String generateMessageID() {
     Random random = new Random();
@@ -104,6 +108,41 @@ public class Message {
     return totalMessages;
 }
 
-    public void storeMessage() {
+    // File writing approach adapted from TutorialsPoint:
+// https://www.tutorialspoint.com/how-to-write-create-a-json-file-using-java
+public void storeMessage() {
+    storedMessages.add(this);
+
+    StringBuilder json = new StringBuilder();
+    json.append("[\n");
+
+    for (int i = 0; i < storedMessages.size(); i++) {
+        Message m = storedMessages.get(i);
+        json.append("  {\n");
+        json.append("    \"messageID\": \"").append(escapeJson(m.messageID)).append("\",\n");
+        json.append("    \"messageHash\": \"").append(escapeJson(m.messageHash)).append("\",\n");
+        json.append("    \"recipient\": \"").append(escapeJson(m.recipient)).append("\",\n");
+        json.append("    \"message\": \"").append(escapeJson(m.messageText)).append("\"\n");
+        json.append("  }");
+        if (i < storedMessages.size() - 1) {
+            json.append(",");
+        }
+        json.append("\n");
     }
+
+    json.append("]");
+
+    try (FileWriter file = new FileWriter("storedMessages.json")) {
+        file.write(json.toString());
+    } catch (IOException e) {
+        System.out.println("Could not save the message: " + e.getMessage());
+    }
+}
+
+private String escapeJson(String value) {
+    if (value == null) {
+        return "";
+    }
+    return value.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n");
+}
 }
