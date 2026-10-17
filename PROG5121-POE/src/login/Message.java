@@ -6,7 +6,7 @@
 
 package login;
 
-import java.util.Random;
+import java.util.Random; import java.util.ArrayList;
 
 public class Message {
 
@@ -15,6 +15,8 @@ public class Message {
     private String recipient;
     private String messageText;
     private String messageHash;
+    private static ArrayList<Message> sentMessages = new ArrayList<>();
+    private static int totalMessages = 0;
     
     public String generateMessageID() {
     Random random = new Random();
@@ -26,6 +28,14 @@ public class Message {
 
     messageID = id.toString();
     return messageID;
+}
+    
+    public void setMessageText(String text) {
+    messageText = text;
+}
+
+    public void setMessageNumber(int number) {
+    messageNumber = number;
 }
 
     public boolean checkMessageID(String id) {
@@ -52,17 +62,31 @@ public class Message {
     return messageHash;
 }
 
-    public String sentMessage() {
-        return "";
+    public String sentMessage(int choice) {
+    switch (choice) {
+        case 1:
+            sentMessages.add(this);
+            totalMessages++;
+            return "Message successfully sent.";
+        case 2:
+            return "Press 0 to delete the message.";
+        case 3:
+            storeMessage();
+            return "Message successfully stored.";
+        default:
+            return "Invalid option, please try again.";
     }
+}
+
+
 
     public String printMessages() {
         return "";
     }
-
+    
     public int returnTotalMessages() {
-        return 0;
-    }
+    return totalMessages;
+}
 
     public void storeMessage() {
     }
