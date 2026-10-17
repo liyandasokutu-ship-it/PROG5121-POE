@@ -90,7 +90,14 @@ public class Message {
             return "Invalid option, please try again.";
     }
 }
-
+    
+    public String getMessageDetails() {
+    return "Message ID: " + messageID + "\n"
+         + "Message Hash: " + messageHash + "\n"
+         + "Recipient: " + recipient + "\n"
+         + "Message: " + messageText;
+}
+    
     public String printMessages() {
     StringBuilder output = new StringBuilder();
 
@@ -108,8 +115,8 @@ public class Message {
     return totalMessages;
 }
 
-    // File writing approach adapted from TutorialsPoint:
-// https://www.tutorialspoint.com/how-to-write-create-a-json-file-using-java
+    // File writing approach adapted from TutorialsPoint (n.d.) How to write/create a JSON file using Java?
+// Available at: https://www.tutorialspoint.com/how-to-write-create-a-json-file-using-java (Accessed: 17 October 2026).
 public void storeMessage() {
     storedMessages.add(this);
 
