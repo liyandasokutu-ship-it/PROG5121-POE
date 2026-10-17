@@ -6,6 +6,8 @@
 
 package login;
 
+import java.util.Random;
+
 public class Message {
 
     private String messageID;
@@ -13,10 +15,22 @@ public class Message {
     private String recipient;
     private String messageText;
     private String messageHash;
+    
+    public String generateMessageID() {
+    Random random = new Random();
+    StringBuilder id = new StringBuilder();
 
-    public boolean checkMessageID() {
-        return false;
+    for (int i = 0; i < 10; i++) {
+        id.append(random.nextInt(10));
     }
+
+    messageID = id.toString();
+    return messageID;
+}
+
+    public boolean checkMessageID(String id) {
+    return id != null && id.length() <= 10;
+}
 
     public String checkRecipientCell() {
         return "";
