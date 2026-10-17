@@ -32,9 +32,16 @@ public class Message {
     return id != null && id.length() <= 10;
 }
 
-    public String checkRecipientCell() {
-        return "";
+    public String checkRecipientCell(String cellNumber) {
+    Login login = new Login();
+
+    if (login.checkCellPhoneNumber(cellNumber)) {
+        recipient = cellNumber;
+        return "Cell phone number successfully captured.";
+    } else {
+        return "Cell phone number is incorrectly formatted or does not contain an international code. Please correct the number and try again.";
     }
+}
 
     public String createMessageHash() {
         return "";
