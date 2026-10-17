@@ -41,6 +41,15 @@ public class Message {
     public boolean checkMessageID(String id) {
     return id != null && id.length() <= 10;
 }
+    
+    public String checkMessageLength(String text) {
+    if (text.length() <= 250) {
+        return "Message ready to send.";
+    } else {
+        int extra = text.length() - 250;
+        return "Message exceeds 250 characters by " + extra + "; please reduce the size.";
+    }
+}
 
     public String checkRecipientCell(String cellNumber) {
     Login login = new Login();
