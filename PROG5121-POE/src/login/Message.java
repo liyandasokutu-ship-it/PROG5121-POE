@@ -34,6 +34,10 @@ public class Message {
     return messageID;
 }
     
+    public String getMessageIDMessage() {
+    return "Message ID generated: " + messageID;
+}
+    
     public void setMessageText(String text) {
     messageText = text;
 }
