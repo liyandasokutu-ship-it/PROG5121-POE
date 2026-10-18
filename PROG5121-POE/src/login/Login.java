@@ -38,7 +38,8 @@ public class Login {
     return hasLength && hasCapital && hasNumber && hasSpecial;
 }
 
-    // Regex pattern adapted from: https://www.baeldung.com/java-regex-validate-phone-numbers
+    // Regex pattern adapted from Baeldung (2024) Validate Phone Numbers With Java Regex.
+    // Available at: https://www.baeldung.com/java-regex-validate-phone-numbers (Accessed: 17 October 2026).
     public boolean checkCellPhoneNumber(String cellNumber) {
         return cellNumber.matches("^\\+\\d{1,3}\\d{7,10}$");
 }
