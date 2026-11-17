@@ -10,7 +10,7 @@ public class Main {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        Login login = new Login();
+        Login login = new Login(); 
         boolean running = true;
 
         while (running) {
