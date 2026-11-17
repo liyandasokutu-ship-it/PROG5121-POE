@@ -204,4 +204,139 @@ private String escapeJson(String value) {
     }
     return value.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n");
 }
+
+    // ===== Part 3: methods that read the parallel arrays =====
+
+    // Name of the logged-in user, shown as the sender (set from Main after login)
+    private static String sender = "Logged-in user";
+
+    public static void setSender(String name) {
+        sender = name;
+    }
+
+    public static ArrayList<String> getSentMessageList() {
+        return sentMessageList;
+    }
+
+    public static ArrayList<String> getDisregardedMessageList() {
+        return disregardedMessageList;
+    }
+
+    public static ArrayList<String> getStoredMessageList() {
+        return storedMessageList;
+    }
+
+    public static ArrayList<String> getMessageHashList() {
+        return messageHashList;
+    }
+
+    public static ArrayList<String> getMessageIDList() {
+        return messageIDList;
+    }
+
+    // 2a: sender and recipient of every stored message
+    public static String displayStoredSendersAndRecipients() {
+        StringBuilder output = new StringBuilder();
+        for (int i = 0; i < messageFlagList.size(); i++) {
+            if (messageFlagList.get(i).equals("Stored")) {
+                output.append("Sender: ").append(sender)
+                      .append(" | Recipient: ").append(recipientList.get(i)).append("\n");
+            }
+        }
+        if (output.length() == 0) {
+            return "No stored messages found.";
+        }
+        return output.toString();
+    }
+
+    // 2b: longest stored message
+    public static String getLongestStoredMessage() {
+        String longest = "";
+        for (String text : storedMessageList) {
+            if (text.length() > longest.length()) {
+                longest = text;
+            }
+        }
+        if (longest.isEmpty()) {
+            return "No stored messages found.";
+        }
+        return longest;
+    }
+
+    // 2c: search by message ID (the message and the recipient come from the same position)
+    public static String searchByMessageID(String id) {
+        int index = messageIDList.indexOf(id);
+        if (index == -1) {
+            return "Message ID not found.";
+        }
+        return messageTextList.get(index);
+    }
+
+    public static String getRecipientByID(String id) {
+        int index = messageIDList.indexOf(id);
+        if (index == -1) {
+            return "Message ID not found.";
+        }
+        return recipientList.get(index);
+    }
+
+    // 2d: every sent or stored message for one recipient
+    public static ArrayList<String> searchByRecipient(String number) {
+        ArrayList<String> found = new ArrayList<>();
+        for (int i = 0; i < recipientList.size(); i++) {
+            if (number.equals(recipientList.get(i)) && !messageFlagList.get(i).equals("Disregard")) {
+                found.add(messageTextList.get(i));
+            }
+        }
+        return found;
+    }
+
+    // 2e: delete a message using its hash, removing it from every array at that position
+    public static String deleteByHash(String hash) {
+        int index = messageHashList.indexOf(hash);
+        if (index == -1) {
+            return "Message hash not found.";
+        }
+
+        String text = messageTextList.get(index);
+        String flag = messageFlagList.get(index);
+
+        if (flag.equals("Sent")) {
+            sentMessageList.remove(text);
+        } else if (flag.equals("Disregard")) {
+            disregardedMessageList.remove(text);
+        } else {
+            storedMessageList.remove(text);
+        }
+
+        messageIDList.remove(index);
+        messageHashList.remove(index);
+        recipientList.remove(index);
+        messageTextList.remove(index);
+        messageFlagList.remove(index);
+
+        sentMessages.removeIf(m -> hash.equals(m.messageHash));
+        storedMessages.removeIf(m -> hash.equals(m.messageHash));
+
+        return "Message: \"" + text + "\" successfully deleted.";
+    }
+
+    // 2f: full report of the sent and stored messages (disregarded messages are left out)
+    public static String getReport() {
+        StringBuilder report = new StringBuilder();
+        for (int i = 0; i < messageFlagList.size(); i++) {
+            if (!messageFlagList.get(i).equals("Disregard")) {
+                report.append("Message ID: ").append(messageIDList.get(i)).append("\n");
+                report.append("Message Hash: ").append(messageHashList.get(i)).append("\n");
+                report.append("Recipient: ").append(recipientList.get(i)).append("\n");
+                report.append("Message: ").append(messageTextList.get(i)).append("\n");
+                report.append("Status: ").append(messageFlagList.get(i)).append("\n\n");
+            }
+        }
+        if (report.length() == 0) {
+            return "No messages to report.";
+        }
+        return report.toString();
+    }
 }
+
