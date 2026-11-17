@@ -97,13 +97,13 @@ public class Main {
                     if (entered >= limit) {
                         System.out.println("You have already entered all " + limit + " of your messages.");
                     } else {
-                        while (entered < limit) {
-                            enterMessage(scanner, entered);
-                            entered++;
+                        for (int i = entered; i < limit; i++) {
+                            enterMessage(scanner, i);
                         }
+                        entered = limit;
                         System.out.println("\nTotal messages sent: " + tracker.returnTotalMessages());
-                    }
-                    break;
+                   }
+                   break;
 
                 case "2":
                     System.out.println("Coming Soon.");

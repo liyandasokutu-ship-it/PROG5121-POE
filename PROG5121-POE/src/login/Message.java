@@ -24,13 +24,15 @@ public class Message {
     
     public String generateMessageID() {
     Random random = new Random();
-    StringBuilder id = new StringBuilder();
+    long number = (long) (random.nextDouble() * 10000000000L);
 
-    for (int i = 0; i < 10; i++) {
-        id.append(random.nextInt(10));
+    // Convert to a String and pad with leading zeros so the ID is always 10 digits
+    String digits = String.valueOf(number);
+    while (digits.length() < 10) {
+        digits = "0" + digits;
     }
 
-    messageID = id.toString();
+    messageID = digits;
     return messageID;
 }
     
