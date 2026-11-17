@@ -21,6 +21,17 @@ public class Message {
     private static ArrayList<Message> sentMessages = new ArrayList<>();
     private static int totalMessages = 0;
     private static ArrayList<Message> storedMessages = new ArrayList<>();
+        // Parallel arrays: the same position in each list belongs to the same message
+    private static ArrayList<String> messageIDList = new ArrayList<>();
+    private static ArrayList<String> messageHashList = new ArrayList<>();
+    private static ArrayList<String> recipientList = new ArrayList<>();
+    private static ArrayList<String> messageTextList = new ArrayList<>();
+    private static ArrayList<String> messageFlagList = new ArrayList<>();
+
+    // Arrays required by the brief, one for each message flag
+    private static ArrayList<String> sentMessageList = new ArrayList<>();
+    private static ArrayList<String> disregardedMessageList = new ArrayList<>();
+    private static ArrayList<String> storedMessageList = new ArrayList<>();
     
     public String generateMessageID() {
     Random random = new Random();
@@ -81,21 +92,56 @@ public class Message {
     return messageHash;
 }
 
-    public String sentMessage(int choice) {
-    switch (choice) {
-        case 1:
-            sentMessages.add(this);
-            totalMessages++;
-            return "Message successfully sent.";
-        case 2:
-            return "Press 0 to delete the message.";
-        case 3:
-            storeMessage();
-            return "Message successfully stored.";
-        default:
-            return "Invalid option, please try again.";
+        // Adds this message to the parallel arrays using its flag (Sent, Disregard or Stored)
+    private void addToArrays(String flag) {
+        messageIDList.add(messageID);
+        messageHashList.add(messageHash);
+        recipientList.add(recipient);
+        messageTextList.add(messageText);
+        messageFlagList.add(flag);
+
+        if (flag.equals("Sent")) {
+            sentMessageList.add(messageText);
+        } else if (flag.equals("Disregard")) {
+            disregardedMessageList.add(messageText);
+        } else {
+            storedMessageList.add(messageText);
+        }
     }
-}
+
+    public String sentMessage(int choice) {
+        switch (choice) {
+            case 1:
+                sentMessages.add(this);
+                totalMessages++;
+                addToArrays("Sent");
+                return "Message successfully sent.";
+            case 2:
+                addToArrays("Disregard");
+                return "Press 0 to delete the message.";
+            case 3:
+                storeMessage();
+                addToArrays("Stored");
+                return "Message successfully stored.";
+            default:
+                return "Invalid option, please try again.";
+        }
+    }
+
+    // Clears every list so the unit tests always start from an empty state
+    public static void clearAllArrays() {
+        sentMessages.clear();
+        storedMessages.clear();
+        totalMessages = 0;
+        messageIDList.clear();
+        messageHashList.clear();
+        recipientList.clear();
+        messageTextList.clear();
+        messageFlagList.clear();
+        sentMessageList.clear();
+        disregardedMessageList.clear();
+        storedMessageList.clear();
+    }
     
     public String getMessageDetails() {
     return "Message ID: " + messageID + "\n"
