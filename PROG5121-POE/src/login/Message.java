@@ -174,6 +174,11 @@ public class Message {
 // Available at: https://www.tutorialspoint.com/how-to-write-create-a-json-file-using-java (Accessed: 17 October 2026).
 public void storeMessage() {
     storedMessages.add(this);
+            saveStoredMessages();
+    }
+
+    // Rewrites storedMessages.json from the list of stored messages
+    public static void saveStoredMessages() {
 
     StringBuilder json = new StringBuilder();
     json.append("[\n");
@@ -201,7 +206,7 @@ public void storeMessage() {
     }
 }
 
-private String escapeJson(String value) {
+    private static String escapeJson(String value) {
     if (value == null) {
         return "";
     }
@@ -320,6 +325,7 @@ private String escapeJson(String value) {
 
         sentMessages.removeIf(m -> hash.equals(m.messageHash));
         storedMessages.removeIf(m -> hash.equals(m.messageHash));
+                saveStoredMessages();
 
         return "Message: \"" + text + "\" successfully deleted.";
     }
