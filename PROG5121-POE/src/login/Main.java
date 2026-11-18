@@ -4,6 +4,7 @@
  */
 package login;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
@@ -48,6 +49,7 @@ public class Main {
                     System.out.println(login.returnLoginStatus(success));
 
                     if (success) {
+                                        Message.setSender(loginUsername);
                         quickChat(scanner);
                         running = false;
                     }
@@ -66,6 +68,7 @@ public class Main {
 
     private static void quickChat(Scanner scanner) {
         System.out.println("\nWelcome to QuickChat.");
+                Message.loadStoredMessages();
 
         int limit = 0;
         while (limit <= 0) {
@@ -89,6 +92,7 @@ public class Main {
             System.out.println("1) Send Messages");
             System.out.println("2) Show recently sent messages");
             System.out.println("3) Quit");
+                    System.out.println("4) Stored Messages");
             System.out.print("Choose an option: ");
             String option = scanner.nextLine().trim();
 
@@ -112,6 +116,75 @@ public class Main {
                 case "3":
                     chatting = false;
                     System.out.println("Goodbye!");
+                    break;
+                                case "4":
+                storedMessagesMenu(scanner);
+                break;
+
+                default:
+                    System.out.println("Invalid option, please try again.");
+            }
+        }
+    }
+    
+    
+    // Fourth main menu option: works with the parallel arrays in Message
+    private static void storedMessagesMenu(Scanner scanner) {
+        boolean viewing = true;
+
+        while (viewing) {
+            System.out.println("\n=== Stored Messages ===");
+            System.out.println("1) Display the sender and recipient of all stored messages");
+            System.out.println("2) Display the longest stored message");
+            System.out.println("3) Search for a message ID");
+            System.out.println("4) Search for all messages to a recipient");
+            System.out.println("5) Delete a message using its hash");
+            System.out.println("6) Display the full report");
+            System.out.println("7) Back to the QuickChat menu");
+            System.out.print("Choose an option: ");
+            String option = scanner.nextLine().trim();
+
+            switch (option) {
+                case "1":
+                    System.out.println(Message.displayStoredSendersAndRecipients());
+                    break;
+
+                case "2":
+                    System.out.println("Longest stored message: " + Message.getLongestStoredMessage());
+                    break;
+
+                case "3":
+                    System.out.print("Enter the message ID: ");
+                    String searchID = scanner.nextLine().trim();
+                    System.out.println("Recipient: " + Message.getRecipientByID(searchID));
+                    System.out.println("Message: " + Message.searchByMessageID(searchID));
+                    break;
+
+                case "4":
+                    System.out.print("Enter the recipient number: ");
+                    String searchNumber = scanner.nextLine().trim();
+                    ArrayList<String> found = Message.searchByRecipient(searchNumber);
+                    if (found.isEmpty()) {
+                        System.out.println("No messages found for that recipient.");
+                    } else {
+                        for (String text : found) {
+                            System.out.println(text);
+                        }
+                    }
+                    break;
+
+                case "5":
+                    System.out.print("Enter the message hash: ");
+                    String deleteHash = scanner.nextLine().trim();
+                    System.out.println(Message.deleteByHash(deleteHash));
+                    break;
+
+                case "6":
+                    System.out.println(Message.getReport());
+                    break;
+
+                case "7":
+                    viewing = false;
                     break;
 
                 default:
