@@ -61,6 +61,10 @@ public class Message {
     public void setMessageNumber(int number) {
     messageNumber = number;
 }
+    
+    public void setRecipient(String number) {
+        recipient = number;
+    }
 
     public boolean checkMessageID(String id) {
     return id != null && id.length() <= 10;
