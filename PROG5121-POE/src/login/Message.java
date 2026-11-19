@@ -10,6 +10,9 @@ import java.util.Random;
 import java.util.ArrayList;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 
 public class Message {
 
@@ -21,16 +24,29 @@ public class Message {
     private static ArrayList<Message> sentMessages = new ArrayList<>();
     private static int totalMessages = 0;
     private static ArrayList<Message> storedMessages = new ArrayList<>();
+        // Parallel arrays: the same position in each list belongs to the same message
+    private static ArrayList<String> messageIDList = new ArrayList<>();
+    private static ArrayList<String> messageHashList = new ArrayList<>();
+    private static ArrayList<String> recipientList = new ArrayList<>();
+    private static ArrayList<String> messageTextList = new ArrayList<>();
+    private static ArrayList<String> messageFlagList = new ArrayList<>();
+
+    // Arrays required by the brief, one for each message flag
+    private static ArrayList<String> sentMessageList = new ArrayList<>();
+    private static ArrayList<String> disregardedMessageList = new ArrayList<>();
+    private static ArrayList<String> storedMessageList = new ArrayList<>();
     
     public String generateMessageID() {
     Random random = new Random();
-    StringBuilder id = new StringBuilder();
+    long number = (long) (random.nextDouble() * 10000000000L);
 
-    for (int i = 0; i < 10; i++) {
-        id.append(random.nextInt(10));
+    // Convert to a String and pad with leading zeros so the ID is always 10 digits
+    String digits = String.valueOf(number);
+    while (digits.length() < 10) {
+        digits = "0" + digits;
     }
 
-    messageID = id.toString();
+    messageID = digits;
     return messageID;
 }
     
@@ -45,6 +61,10 @@ public class Message {
     public void setMessageNumber(int number) {
     messageNumber = number;
 }
+    
+    public void setRecipient(String number) {
+        recipient = number;
+    }
 
     public boolean checkMessageID(String id) {
     return id != null && id.length() <= 10;
@@ -79,21 +99,56 @@ public class Message {
     return messageHash;
 }
 
-    public String sentMessage(int choice) {
-    switch (choice) {
-        case 1:
-            sentMessages.add(this);
-            totalMessages++;
-            return "Message successfully sent.";
-        case 2:
-            return "Press 0 to delete the message.";
-        case 3:
-            storeMessage();
-            return "Message successfully stored.";
-        default:
-            return "Invalid option, please try again.";
+        // Adds this message to the parallel arrays using its flag (Sent, Disregard or Stored)
+    private void addToArrays(String flag) {
+        messageIDList.add(messageID);
+        messageHashList.add(messageHash);
+        recipientList.add(recipient);
+        messageTextList.add(messageText);
+        messageFlagList.add(flag);
+
+        if (flag.equals("Sent")) {
+            sentMessageList.add(messageText);
+        } else if (flag.equals("Disregard")) {
+            disregardedMessageList.add(messageText);
+        } else {
+            storedMessageList.add(messageText);
+        }
     }
-}
+
+    public String sentMessage(int choice) {
+        switch (choice) {
+            case 1:
+                sentMessages.add(this);
+                totalMessages++;
+                addToArrays("Sent");
+                return "Message successfully sent.";
+            case 2:
+                addToArrays("Disregard");
+                return "Press 0 to delete the message.";
+            case 3:
+                storeMessage();
+                addToArrays("Stored");
+                return "Message successfully stored.";
+            default:
+                return "Invalid option, please try again.";
+        }
+    }
+
+    // Clears every list so the unit tests always start from an empty state
+    public static void clearAllArrays() {
+        sentMessages.clear();
+        storedMessages.clear();
+        totalMessages = 0;
+        messageIDList.clear();
+        messageHashList.clear();
+        recipientList.clear();
+        messageTextList.clear();
+        messageFlagList.clear();
+        sentMessageList.clear();
+        disregardedMessageList.clear();
+        storedMessageList.clear();
+    }
     
     public String getMessageDetails() {
     return "Message ID: " + messageID + "\n"
@@ -123,6 +178,11 @@ public class Message {
 // Available at: https://www.tutorialspoint.com/how-to-write-create-a-json-file-using-java (Accessed: 17 October 2026).
 public void storeMessage() {
     storedMessages.add(this);
+            saveStoredMessages();
+    }
+
+    // Rewrites storedMessages.json from the list of stored messages
+    public static void saveStoredMessages() {
 
     StringBuilder json = new StringBuilder();
     json.append("[\n");
@@ -150,10 +210,196 @@ public void storeMessage() {
     }
 }
 
-private String escapeJson(String value) {
+    private static String escapeJson(String value) {
     if (value == null) {
         return "";
     }
     return value.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n");
 }
+
+    // ===== Part 3: methods that read the parallel arrays =====
+
+    // Name of the logged-in user, shown as the sender (set from Main after login)
+    private static String sender = "Logged-in user";
+
+    public static void setSender(String name) {
+        sender = name;
+    }
+
+    public static ArrayList<String> getSentMessageList() {
+        return sentMessageList;
+    }
+
+    public static ArrayList<String> getDisregardedMessageList() {
+        return disregardedMessageList;
+    }
+
+    public static ArrayList<String> getStoredMessageList() {
+        return storedMessageList;
+    }
+
+    public static ArrayList<String> getMessageHashList() {
+        return messageHashList;
+    }
+
+    public static ArrayList<String> getMessageIDList() {
+        return messageIDList;
+    }
+
+    // 2a: sender and recipient of every stored message
+    public static String displayStoredSendersAndRecipients() {
+        StringBuilder output = new StringBuilder();
+        for (int i = 0; i < messageFlagList.size(); i++) {
+            if (messageFlagList.get(i).equals("Stored")) {
+                output.append("Sender: ").append(sender)
+                      .append(" | Recipient: ").append(recipientList.get(i)).append("\n");
+            }
+        }
+        if (output.length() == 0) {
+            return "No stored messages found.";
+        }
+        return output.toString();
+    }
+
+    // 2b: longest stored message
+    public static String getLongestStoredMessage() {
+        String longest = "";
+        for (String text : storedMessageList) {
+            if (text.length() > longest.length()) {
+                longest = text;
+            }
+        }
+        if (longest.isEmpty()) {
+            return "No stored messages found.";
+        }
+        return longest;
+    }
+
+    // 2c: search by message ID (the message and the recipient come from the same position)
+    public static String searchByMessageID(String id) {
+        int index = messageIDList.indexOf(id);
+        if (index == -1) {
+            return "Message ID not found.";
+        }
+        return messageTextList.get(index);
+    }
+
+    public static String getRecipientByID(String id) {
+        int index = messageIDList.indexOf(id);
+        if (index == -1) {
+            return "Message ID not found.";
+        }
+        return recipientList.get(index);
+    }
+
+    // 2d: every sent or stored message for one recipient
+    public static ArrayList<String> searchByRecipient(String number) {
+        ArrayList<String> found = new ArrayList<>();
+        for (int i = 0; i < recipientList.size(); i++) {
+            if (number.equals(recipientList.get(i)) && !messageFlagList.get(i).equals("Disregard")) {
+                found.add(messageTextList.get(i));
+            }
+        }
+        return found;
+    }
+
+    // 2e: delete a message using its hash, removing it from every array at that position
+    public static String deleteByHash(String hash) {
+        int index = messageHashList.indexOf(hash);
+        if (index == -1) {
+            return "Message hash not found.";
+        }
+
+        String text = messageTextList.get(index);
+        String flag = messageFlagList.get(index);
+
+        if (flag.equals("Sent")) {
+            sentMessageList.remove(text);
+        } else if (flag.equals("Disregard")) {
+            disregardedMessageList.remove(text);
+        } else {
+            storedMessageList.remove(text);
+        }
+
+        messageIDList.remove(index);
+        messageHashList.remove(index);
+        recipientList.remove(index);
+        messageTextList.remove(index);
+        messageFlagList.remove(index);
+
+        sentMessages.removeIf(m -> hash.equals(m.messageHash));
+        storedMessages.removeIf(m -> hash.equals(m.messageHash));
+                saveStoredMessages();
+
+        return "Message: \"" + text + "\" successfully deleted.";
+    }
+
+    // 2f: full report of the sent and stored messages (disregarded messages are left out)
+    public static String getReport() {
+        StringBuilder report = new StringBuilder();
+        for (int i = 0; i < messageFlagList.size(); i++) {
+            if (!messageFlagList.get(i).equals("Disregard")) {
+                report.append("Message ID: ").append(messageIDList.get(i)).append("\n");
+                report.append("Message Hash: ").append(messageHashList.get(i)).append("\n");
+                report.append("Recipient: ").append(recipientList.get(i)).append("\n");
+                report.append("Message: ").append(messageTextList.get(i)).append("\n");
+                report.append("Status: ").append(messageFlagList.get(i)).append("\n\n");
+            }
+        }
+        if (report.length() == 0) {
+            return "No messages to report.";
+        }
+        return report.toString();
+    }
+
+    // File reading approach adapted from DigitalOcean (n.d.) Java read file line by line.
+    // Available at: https://www.digitalocean.com/community/tutorials/java-read-file-line-by-line (Accessed: 18 November 2026)
+    // Reads storedMessages.json and adds each stored message to the arrays
+    public static void loadStoredMessages() {
+        File jsonFile = new File("storedMessages.json");
+        if (!jsonFile.exists()) {
+            return;
+        }
+
+        String id = "";
+        String hash = "";
+        String recipientNumber = "";
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(jsonFile))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+
+                if (line.startsWith("\"messageID\"")) {
+                    id = readValue(line);
+                } else if (line.startsWith("\"messageHash\"")) {
+                    hash = readValue(line);
+                } else if (line.startsWith("\"recipient\"")) {
+                    recipientNumber = readValue(line);
+                } else if (line.startsWith("\"message\"")) {
+                    // "message" is the last field of each entry, so the entry is complete here
+                    if (!messageHashList.contains(hash)) {
+                        Message loaded = new Message();
+                        loaded.messageID = id;
+                        loaded.messageHash = hash;
+                        loaded.recipient = recipientNumber;
+                        loaded.messageText = readValue(line);
+                        storedMessages.add(loaded);
+                        loaded.addToArrays("Stored");
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Could not read the stored messages: " + e.getMessage());
+        }
+    }
+
+    // Returns the text between the quotes after the colon and removes the JSON escape characters
+    private static String readValue(String line) {
+        int start = line.indexOf(": \"") + 3;
+        int end = line.lastIndexOf("\"");
+        String value = line.substring(start, end);
+        return value.replace("\\n", "\n").replace("\\\"", "\"").replace("\\\\", "\\");
+    }
 }
+

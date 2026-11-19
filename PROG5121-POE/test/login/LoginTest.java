@@ -82,4 +82,27 @@ public class LoginTest {
         String result = login.registerUser("kyl_1", "Ch&&sec@ke99!", "08966553", "Kyle", "Smith");
         assertEquals("Cell phone number is incorrectly formatted or does not contain an international code.", result);
     }
+
+    @Test
+    public void testRegisterUser_UsernameIncorrect_ReturnsErrorMessage() {
+        Login login = new Login();
+        String result = login.registerUser("kyle!!!!!!", "Ch&&sec@ke99!", "+27838968976", "Kyle", "Smith");
+        assertEquals("Username is not correctly formatted; please ensure that your username contains an underscore and is no more than five characters in length.", result);
+    }
+
+    @Test
+    public void testReturnLoginStatus_UsernameCorrect_ReturnsWelcomeMessage() {
+        Login login = new Login();
+        login.registerUser("kyl_1", "Ch&&sec@ke99!", "+27838968976", "Kyle", "Smith");
+        boolean success = login.loginUser("kyl_1", "Ch&&sec@ke99!");
+        assertEquals("Welcome Kyle, Smith it is great to see you again.", login.returnLoginStatus(success));
+    }
+
+    @Test
+    public void testRegisterUser_CellNumberCorrect_ReturnsSuccessMessage() {
+        Login login = new Login();
+        String result = login.registerUser("kyl_1", "Ch&&sec@ke99!", "+27838968976", "Kyle", "Smith");
+        String[] lines = result.split("\n");
+        assertEquals("Cell number successfully captured.", lines[2]);
+    }
 }
